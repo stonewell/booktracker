@@ -16,12 +16,12 @@ idx_data = '''<container version="1.0"
 
 # The index file is another XML file, living per convention
 # in OEBPS/Content.xml
-index_tpl = '''<package xmlns="http://www.idpf.org/2007/opf" version="2.0">
+index_tpl = '''<package xmlns="http://www.idpf.org/2007/opf" version="2.0" unique-identifier="BookId">
   <metadata xmlns:calibre="http://calibre.kovidgoyal.net/2009/metadata" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:opf="http://www.idpf.org/2007/opf" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <dc:title>%(title)s</dc:title>
+    <dc:identifier id="BookId">%(title)s</dc:identifier>
   </metadata>
   <manifest>
-    <item href="nav.xhtml" id="nav" media-type="application/xhtml+xml" properties="nav"/>
     <item href="toc.ncx" id="ncx" media-type="application/x-dtbncx+xml"/>
     %(manifest)s
   </manifest>
@@ -30,8 +30,7 @@ index_tpl = '''<package xmlns="http://www.idpf.org/2007/opf" version="2.0">
   </spine>
 </package>'''
 
-nav_template = '''
-<?xml version="1.0" encoding="UTF-8"?>
+nav_template = '''<?xml version="1.0" encoding="UTF-8"?>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="en-US" lang="en-US">
    <head>
       <title>EPUB 3 Navigation Document</title>
@@ -48,13 +47,15 @@ nav_template = '''
 </html>
 '''
 
-toc_ncx_template = '''
-<?xml version="1.0" encoding="UTF-8"?>
-<ncx xmlns:ncx="http://www.daisy.org/z3986/2005/ncx/" xmlns="http://www.daisy.org/z3986/2005/ncx/"
-    version="2005-1" xml:lang="en">
+toc_ncx_template = '''<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE ncx PUBLIC "-//NISO//DTD ncx 2005-1//EN" "http://www.daisy.org/z3986/2005/ncx-2005-1.dtd">
+<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" xml:lang="Zh" version="2005-1">
     <head>
-        <meta name="dtb:uid" content="code.google.com.epub-samples.georgia-pls-ssml"/>
-    </head>
+        <meta name="dtb:uid" content="%(title)s" />
+    <meta content="1" name="dtb:depth"/>
+    <meta content="0" name="dtb:totalPageCount"/>
+    <meta content="0" name="dtb:maxPageNumber"/>
+  </head>
     <docTitle>
         <text>%(title)s</text>
     </docTitle>
@@ -78,7 +79,7 @@ class EPubBuilder(object):
         epub_file = Path(self.output_dir_) / self.title_
         epub_file = epub_file.with_suffix(".epub")
 
-        epub = zipfile.ZipFile(str(epub_file), 'w')
+        epub = zipfile.ZipFile(str(epub_file), 'w', zipfile.ZIP_DEFLATED)
 
         # The first file must be named "mimetype"
         epub.writestr("mimetype", "application/epub+zip")
@@ -116,7 +117,7 @@ class EPubBuilder(object):
             'title': self.title_
         })
 
-        epub.writestr('nav.xhtml', nav_template % {'toc': toc})
+        #epub.writestr('nav.xhtml', nav_template % {'toc': toc})
         epub.writestr('toc.ncx', toc_ncx_template % {
             'toc_ncx': toc_ncx,
             'title': self.title_

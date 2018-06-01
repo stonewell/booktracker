@@ -9,22 +9,26 @@ class PageParser(HTMLParser):
         self.in_content_ = False
         self.in_a_ = False
 
-        self.content = '<html><body>'
+        self.content = '''
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  </head>
+  <body>
+'''
 
     def handle_starttag(self, tag, attrs):
         if tag == 'h1':
             self.in_content_ = True
             self.content += '<h1>'
         elif tag == 'br' and self.in_content_:
-            self.content += '<br>'
+            self.content += '<br/>'
         elif tag == 'a':
             self.in_a_ = True
 
     def handle_endtag(self, tag):
         if tag == 'h1' and self.in_content_:
             self.content += '</h1>'
-        elif tag == 'br' and self.in_content_:
-            self.content += '</br>'
         elif tag == 'html':
             self.content += '</body></html>'
         elif tag == 'a':
