@@ -37,6 +37,11 @@ class Tracker(object):
                 'chapters': [],
             }
 
+    def get_title(self, title):
+        idx = title.find('最新章节')
+
+        return title[:idx]
+
     def refresh(self):
         with urllib.request.urlopen(self.url_) as response:
             m_time = datetime.datetime.strptime(response
@@ -44,7 +49,7 @@ class Tracker(object):
                                                 '%a, %d %b %Y %H:%M:%S %Z').timestamp()
 
             if 'title' in self.idx_ and m_time <= self.idx_['m_time']:
-                self.title = self.idx_['title']
+                self.title = self.get_title(self.idx_['title'])
                 return 0
 
             parser = IndexParser()
@@ -52,7 +57,7 @@ class Tracker(object):
                                             .headers.get_content_charset())
             parser.feed(r_data)
 
-            self.title = self.idx_['title'] = parser.title_
+            self.title = self.idx_['title'] = self.get_title(parser.title_)
 
             chapters = parser.chapters_
 
