@@ -5,6 +5,7 @@ import datetime
 from pathlib import Path
 from piaotian.index_parser import IndexParser
 from piaotian.page_tracker import PageTracker
+from utils.epub_builder import EPubBuilder
 
 
 class Tracker(object):
@@ -37,7 +38,7 @@ class Tracker(object):
                 'chapters': [],
             }
 
-    def get_title(self, title):
+    def __get_title(self, title):
         idx = title.find('最新章节')
 
         return title[:idx]
@@ -49,7 +50,7 @@ class Tracker(object):
                                                 '%a, %d %b %Y %H:%M:%S %Z').timestamp()
 
             if 'title' in self.idx_ and m_time <= self.idx_['m_time']:
-                self.title = self.get_title(self.idx_['title'])
+                self.title = self.__get_title(self.idx_['title'])
                 return 0
 
             parser = IndexParser()
@@ -57,7 +58,7 @@ class Tracker(object):
                                             .headers.get_content_charset())
             parser.feed(r_data)
 
-            self.title = self.idx_['title'] = self.get_title(parser.title_)
+            self.title = self.idx_['title'] = self.__get_title(parser.title_)
 
             chapters = parser.chapters_
 
@@ -93,3 +94,11 @@ class Tracker(object):
                 f.write(i_data.encode('utf8'))
 
             return update_count
+
+    def gen_epub(self):
+        content_dir = self.book_dir_ / 'content/'
+        eb = EPubBuilder(self.title,
+                         str(self.book_dir_),
+                         str(content_dir),
+                         self.idx_['chapters'])
+        eb.build()
