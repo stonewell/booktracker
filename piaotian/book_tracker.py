@@ -49,8 +49,9 @@ class Tracker(object):
                                                 .info()['Last-Modified'],
                                                 '%a, %d %b %Y %H:%M:%S %Z').timestamp()
 
-            if 'title' in self.idx_ and m_time <= self.idx_['m_time']:
+            if 'title' in self.idx_ and m_time <= self.idx_['m_time'] and 'author' in self.idx_:
                 self.title = self.__get_title(self.idx_['title'])
+                self.author = self.idx_['author']
                 return 0
 
             parser = IndexParser()
@@ -59,6 +60,7 @@ class Tracker(object):
             parser.feed(r_data)
 
             self.title = self.idx_['title'] = self.__get_title(parser.title_)
+            self.author = self.idx_['author'] = parser.author_
 
             chapters = parser.chapters_
 
@@ -98,6 +100,7 @@ class Tracker(object):
     def gen_epub(self):
         content_dir = self.book_dir_ / 'content/'
         eb = EPubBuilder(self.title,
+                         self.author,
                          str(self.book_dir_),
                          str(content_dir),
                          self.idx_['chapters'])

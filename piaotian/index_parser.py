@@ -18,6 +18,7 @@ class IndexParser(HTMLParser):
 
         self.in_title_ = False
         self.title_ = ''
+        self.author_ = ''
 
     def handle_starttag(self, tag, attrs):
         if tag == 'div':
@@ -37,6 +38,17 @@ class IndexParser(HTMLParser):
                     self.a_href_ = value
         elif tag == 'title':
             self.in_title_ = True
+        elif tag == 'meta':
+            author = ''
+            found_author = False
+            for key, value in attrs:
+                if key == 'name' and value == 'author':
+                    found_author = True
+                elif key == 'content':
+                    author = value
+
+            if found_author:
+                self.author_ = author
 
     def handle_endtag(self, tag):
         if tag == 'div' and self.in_content_:

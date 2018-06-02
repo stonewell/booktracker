@@ -20,7 +20,8 @@ index_tpl = '''<package xmlns="http://www.idpf.org/2007/opf" version="2.0" uniqu
   <metadata xmlns:calibre="http://calibre.kovidgoyal.net/2009/metadata" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:opf="http://www.idpf.org/2007/opf" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <dc:title>%(title)s</dc:title>
     <dc:identifier id="BookId">%(title)s</dc:identifier>
-  </metadata>
+    <dc:creator opf:file-as="%(author)s" opf:role="aut">%(author)s</dc:creator>
+   </metadata>
   <manifest>
     <item href="toc.ncx" id="ncx" media-type="application/x-dtbncx+xml"/>
     %(manifest)s
@@ -67,13 +68,14 @@ toc_ncx_template = '''<?xml version="1.0" encoding="utf-8" ?>
 
 
 class EPubBuilder(object):
-    def __init__(self, title, output_dir, content_dir, chapters):
+    def __init__(self, title, author, output_dir, content_dir, chapters):
         super().__init__()
 
         self.title_ = title
         self.output_dir_ = output_dir
         self.content_dir_ = content_dir
         self.chapters_ = chapters
+        self.author_ = author
 
     def build(self):
         epub_file = Path(self.output_dir_) / self.title_
@@ -92,7 +94,7 @@ class EPubBuilder(object):
         toc_ncx = ""
 
         # Write each HTML file to the ebook, collect information for the index
-        for i, html in enumerate(sorted(Path(self.content_dir_).glob("*.html"))):
+        for i, html in enumerate([Path(self.content_dir_) / x[1] for x in self.chapters_]):
             basename = os.path.basename(html)
             manifest += '<item id="file_%s" href="OEBPS/%s" media-type="application/xhtml+xml"/>' % (
                 i+1, basename)
@@ -114,7 +116,8 @@ class EPubBuilder(object):
         epub.writestr('content.opf', index_tpl % {
             'manifest': manifest,
             'spine': spine,
-            'title': self.title_
+            'title': self.title_,
+            'author': self.author_,
         })
 
         #epub.writestr('nav.xhtml', nav_template % {'toc': toc})
