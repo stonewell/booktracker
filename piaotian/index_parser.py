@@ -50,6 +50,10 @@ class IndexParser(HTMLParser):
             if found_author:
                 self.author_ = author
 
+    def is_chapter(self):
+        return not (self.a_href_.startswith('javascript:')
+                    or self.a_href_.startswith('#'))
+
     def handle_endtag(self, tag):
         if tag == 'div' and self.in_content_:
             self.div_stack_ -= 1
@@ -59,7 +63,8 @@ class IndexParser(HTMLParser):
 
         if tag == 'a':
             if self.in_a_:
-                self.chapters_.append((self.a_data_, self.a_href_))
+                if self.is_chapter():
+                    self.chapters_.append((self.a_data_, self.a_href_))
             self.in_a_ = False
 
         if self.div_stack_ == 0:
