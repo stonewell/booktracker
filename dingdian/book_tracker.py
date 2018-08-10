@@ -3,8 +3,8 @@ import urllib.request
 import datetime
 
 from pathlib import Path
-from piaotian.index_parser import IndexParser
-from piaotian.page_tracker import PageTracker
+from dingdian.index_parser import IndexParser
+from dingdian.page_tracker import PageTracker
 from utils.epub_builder import EPubBuilder
 
 
@@ -40,21 +40,10 @@ class Tracker(object):
             }
 
     def __get_title(self, title):
-        idx = title.find('最新章节')
-
-        return title[:idx]
+        return title
 
     def refresh(self):
         with urllib.request.urlopen(self.url_, timeout=self.timeout_) as response:
-            m_time = datetime.datetime.strptime(response
-                                                .info()['Last-Modified'],
-                                                '%a, %d %b %Y %H:%M:%S %Z').timestamp()
-
-            if 'title' in self.idx_ and m_time <= self.idx_['m_time'] and 'author' in self.idx_:
-                self.title = self.__get_title(self.idx_['title'])
-                self.author = self.idx_['author']
-                return 0
-
             parser = IndexParser()
             r_data = response.read().decode(response
                                             .headers.get_content_charset())
@@ -63,7 +52,7 @@ class Tracker(object):
             self.title = self.idx_['title'] = self.__get_title(parser.title_)
             self.author = self.idx_['author'] = parser.author_
 
-            chapters = parser.chapters_
+            chapters = parser.get_chapters()
 
             update_count = 0
 

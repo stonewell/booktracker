@@ -1,8 +1,6 @@
 import argparse
 import sys
 
-from piaotian.book_tracker import Tracker
-
 
 def args_parser():
     parser = argparse.ArgumentParser(prog='booktracker',
@@ -11,6 +9,7 @@ def args_parser():
     parser.add_argument('-l', '--url', type=str, help='a book url to track', required=False)
     parser.add_argument('-o', '--output', type=str, help='directory to store book content', required=True)
     parser.add_argument('--epub', action='store_true', help='generate epub of book', required=False)
+    parser.add_argument('--timeout', type=int, help='network request timeout value, default=13s', required=False, default=13)
     return parser
 
 if __name__ == '__main__':
@@ -30,8 +29,13 @@ if __name__ == '__main__':
     if parser.url:
         urls.add(parser.url)
 
-    for url in urls:
-        tracker = Tracker(url, parser.output)
+    for url in sorted(urls):
+        if url.find('piaotian') > 0:
+            from piaotian.book_tracker import Tracker as PiaoTianTracker
+            tracker = PiaoTianTracker(url, parser.output, parser.timeout)
+        elif url.find('23us') > 0:
+            from dingdian.book_tracker import Tracker as DingDianTracker
+            tracker = DingDianTracker(url, parser.output, parser.timeout)
         update_count = tracker.refresh()
         print(tracker.title, 'update count:', update_count)
         if parser.epub:

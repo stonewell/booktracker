@@ -1,7 +1,7 @@
 import urllib.request
 
 from pathlib import Path
-from piaotian.page_parser import PageParser
+from dingdian.page_parser import PageParser
 
 
 class PageTracker(object):
