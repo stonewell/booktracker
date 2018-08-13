@@ -95,6 +95,9 @@ class EPubBuilder(object):
 
         # Write each HTML file to the ebook, collect information for the index
         for i, html in enumerate([Path(self.content_dir_) / x[1] for x in self.chapters_]):
+            if not Path(html).exists():
+                continue
+
             basename = os.path.basename(html)
             manifest += '<item id="file_%s" href="OEBPS/%s" media-type="application/xhtml+xml"/>' % (
                 i+1, basename)

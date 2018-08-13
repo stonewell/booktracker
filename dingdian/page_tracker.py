@@ -34,6 +34,9 @@ class PageTracker(object):
 
             parser.feed(r_data)
 
+            if parser.content.find('正在手打中，请稍等片刻') >= 0:
+                return 0
+
             with self.local_file_path_.open('wb') as f:
                 f.write(parser.content.encode('utf8'))
 
