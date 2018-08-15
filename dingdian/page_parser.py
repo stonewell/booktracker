@@ -55,5 +55,5 @@ class PageParser(HTMLParser):
 
     def handle_data(self, data):
         if self.in_content_ and not self.in_a_:
-            if data.find('Ps:') < 0 or data.find('PS:') < 0:
+            if data.find('Ps:') < 0 and data.find('PS:') < 0:
                 self.content += data
