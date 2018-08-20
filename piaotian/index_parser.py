@@ -51,7 +51,7 @@ class IndexParser(HTMLParser):
                 self.author_ = author
 
     def is_chapter(self):
-        return not (self.a_href_.startswith('javascript:')
+        return len(self.a_href_) > 0 and not (self.a_href_.startswith('javascript:')
                     or self.a_href_.startswith('#'))
 
     def handle_endtag(self, tag):
