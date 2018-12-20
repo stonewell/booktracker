@@ -1,5 +1,6 @@
 import argparse
 import sys
+import logging
 
 
 def args_parser():
@@ -30,13 +31,17 @@ if __name__ == '__main__':
         urls.add(parser.url)
 
     for url in sorted(urls):
-        if url.find('piaotian') > 0:
-            from piaotian.book_tracker import Tracker as PiaoTianTracker
-            tracker = PiaoTianTracker(url, parser.output, parser.timeout)
-        elif url.find('23us') > 0:
-            from dingdian.book_tracker import Tracker as DingDianTracker
-            tracker = DingDianTracker(url, parser.output, parser.timeout)
-        update_count = tracker.refresh()
-        print(tracker.title, 'update count:', update_count)
-        if parser.epub:
-            tracker.gen_epub()
+        try:
+            if url.find('piaotian') > 0:
+                from piaotian.book_tracker import Tracker as PiaoTianTracker
+                tracker = PiaoTianTracker(url, parser.output, parser.timeout)
+            elif url.find('23us') > 0:
+                from dingdian.book_tracker import Tracker as DingDianTracker
+                tracker = DingDianTracker(url, parser.output, parser.timeout)
+            update_count = tracker.refresh()
+            print(tracker.title, 'update count:', update_count)
+            if parser.epub:
+                tracker.gen_epub()
+        except:
+            logging.exception("update failed")
+            print('update failed:', url)

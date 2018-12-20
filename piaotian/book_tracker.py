@@ -1,11 +1,11 @@
 import json
-import urllib.request
 import datetime
 
 from pathlib import Path
 from piaotian.index_parser import IndexParser
 from piaotian.page_tracker import PageTracker
 from utils.epub_builder import EPubBuilder
+from utils.url_helper import open_url
 
 
 class Tracker(object):
@@ -45,7 +45,7 @@ class Tracker(object):
         return title[:idx]
 
     def refresh(self):
-        with urllib.request.urlopen(self.url_, timeout=self.timeout_) as response:
+        with open_url(self.url_, self.timeout_) as response:
             m_time = datetime.datetime.strptime(response
                                                 .info()['Last-Modified'],
                                                 '%a, %d %b %Y %H:%M:%S %Z').timestamp()

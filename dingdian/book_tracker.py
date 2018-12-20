@@ -1,11 +1,11 @@
 import json
 import urllib.request
-import datetime
 
 from pathlib import Path
 from dingdian.index_parser import IndexParser
 from dingdian.page_tracker import PageTracker
 from utils.epub_builder import EPubBuilder
+from utils.url_helper import open_url
 
 
 class Tracker(object):
@@ -43,7 +43,7 @@ class Tracker(object):
         return title
 
     def refresh(self):
-        with urllib.request.urlopen(self.url_, timeout=self.timeout_) as response:
+        with open_url(self.url_, self.timeout_) as response:
             parser = IndexParser()
             r_data = response.read().decode(response
                                             .headers.get_content_charset())

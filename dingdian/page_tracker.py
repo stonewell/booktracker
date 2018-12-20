@@ -1,7 +1,6 @@
-import urllib.request
-
 from pathlib import Path
 from dingdian.page_parser import PageParser
+from utils.url_helper import open_url
 
 
 class PageTracker(object):
@@ -25,7 +24,7 @@ class PageTracker(object):
         if self.local_file_path_.exists():
             return 0
 
-        with urllib.request.urlopen(self.url_, timeout=self.timeout_) as response:
+        with open_url(self.url_, self.timeout_) as response:
             parser = PageParser()
             raw_data = response.read()
             r_data = raw_data.decode(response
