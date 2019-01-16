@@ -74,9 +74,6 @@ class Tracker(object):
                 page = PageTracker(page_url, content_dir, self.timeout_)
                 update_count += page.refresh()
 
-            if update_count == 0:
-                return update_count
-
             self.idx_['chapters'] = chapters
 
             with self.idx_file_.open('wb') as f:

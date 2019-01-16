@@ -85,6 +85,6 @@ class IndexParser(HTMLParser):
             c[href] = (data, href)
 
         def get_key(item):
-            return item[1]
+            return int(item[1].replace('.html', ''))
 
         return sorted([c[key] for key in c], key=get_key)

@@ -95,3 +95,13 @@ class IndexParser(HTMLParser):
 
         if self.in_title_:
             self.title_ = data
+
+    def get_chapters(self):
+        c = {}
+        for data, href in self.chapters_:
+            c[href] = (data, href)
+
+        def get_key(item):
+            return int(item[1].replace('.html', ''))
+
+        return sorted([c[key] for key in c], key=get_key)

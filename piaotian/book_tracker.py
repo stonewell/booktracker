@@ -63,7 +63,7 @@ class Tracker(object):
             self.title = self.idx_['title'] = self.__get_title(parser.title_)
             self.author = self.idx_['author'] = parser.author_
 
-            chapters = parser.chapters_
+            chapters = parser.get_chapters()
 
             update_count = 0
 
@@ -84,9 +84,6 @@ class Tracker(object):
 
                 page = PageTracker(page_url, content_dir, self.timeout_)
                 update_count += page.refresh()
-
-            if update_count == 0:
-                return update_count
 
             self.idx_['chapters'] = chapters
 
