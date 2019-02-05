@@ -33,7 +33,7 @@ class PageTrackerBase(object):
             parser = self._get_page_parser()
             raw_data = response.read()
             r_data = raw_data.decode(response
-                                     .headers.get_content_charset(),
+                                     .headers.get_content_charset() or 'gb18030',
                                      'ignore')
 
             parser.feed(r_data)

@@ -56,7 +56,7 @@ class TrackerBase(object):
 
             parser = self._get_index_parser()
             r_data = response.read().decode(response
-                                            .headers.get_content_charset())
+                                            .headers.get_content_charset() or 'gb18030')
             parser.feed(r_data)
 
             self.title = self.idx_['title'] = self._get_title(parser.title_)
