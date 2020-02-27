@@ -5,8 +5,8 @@ from piaotian.page_tracker import PageTracker
 from book_tracker_base import TrackerBase
 
 class Tracker(TrackerBase):
-    def __init__(self, url, data_dir, timeout):
-        super().__init__(url, data_dir, timeout)
+    def __init__(self, url, author, title, data_dir, timeout):
+        super().__init__(url, author, title, data_dir, timeout)
 
     def _get_title(self, title):
         idx = title.find('最新章节')

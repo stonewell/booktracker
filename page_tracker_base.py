@@ -10,14 +10,14 @@ class PageTrackerBase(object):
         self.dir_ = dir
         self.timeout_ = timeout
 
-        self.__do_init()
+        self._do_init()
 
-    def __parse_url(self):
+    def _parse_url(self):
         self.file_name_ = Path(self.url_).parts[-1]
         self.local_file_path_ = Path(self.dir_) / self.file_name_
 
-    def __do_init(self):
-        self.__parse_url()
+    def _do_init(self):
+        self._parse_url()
 
     def _get_page_parser(self):
         raise ValueError('no impl')
@@ -45,3 +45,6 @@ class PageTrackerBase(object):
                 f.write(parser.content.encode('utf8'))
 
         return 1
+
+    def login(self):
+        pass

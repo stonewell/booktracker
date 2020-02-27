@@ -6,20 +6,22 @@ from utils.url_helper import open_url
 
 
 class TrackerBase(object):
-    def __init__(self, url, data_dir, timeout):
+    def __init__(self, url, author, title, data_dir, timeout):
         super().__init__()
 
         self.url_ = url
         self.data_dir_ = data_dir
         self.timeout_ = timeout
+        self.author_ = author
+        self.title_ = title
 
-        self.__do_init()
+        self._do_init()
 
-    def __parse_url(self):
+    def _parse_url(self):
         self.prefix_ = Path(self.url_).parts[-2]
 
-    def __do_init(self):
-        self.__parse_url()
+    def _do_init(self):
+        self._parse_url()
         self.book_dir_ = Path(self.data_dir_) / self.prefix_
 
         self.book_dir_.mkdir(parents=True, exist_ok=True)
@@ -48,6 +50,9 @@ class TrackerBase(object):
     def _need_read_page_content(self, response):
         return True
 
+    def _get_page_url(self, page_file):
+        return self.url_.replace('index.html', page_file)
+
     def refresh(self):
         with open_url(self.url_, self.timeout_) as response:
 
@@ -59,8 +64,8 @@ class TrackerBase(object):
                                             .headers.get_content_charset() or 'gb18030')
             parser.feed(r_data)
 
-            self.title = self.idx_['title'] = self._get_title(parser.title_)
-            self.author = self.idx_['author'] = parser.author_
+            self.title = self.idx_['title'] = self.title_ if len(self.title_) > 0 else self._get_title(parser.title_)
+            self.author = self.idx_['author'] = self.author_ if len(self.author_) > 0 else parser.author_
 
             chapters = parser.get_chapters()
 
@@ -72,7 +77,7 @@ class TrackerBase(object):
 
             for i in range(len(self.idx_['chapters'])):
                 page_key, page_file = self.idx_['chapters'][i]
-                page_url = self.url_.replace('index.html', page_file)
+                page_url = self._get_page_url(page_file)
 
                 page = self._get_page_tracker(page_url, content_dir,
                                               self.timeout_)
@@ -80,7 +85,7 @@ class TrackerBase(object):
 
             for i in range(len(self.idx_['chapters']), len(chapters)):
                 page_key, page_file = chapters[i]
-                page_url = self.url_.replace('index.html', page_file)
+                page_url = self._get_page_url(page_file)
 
                 page = self._get_page_tracker(page_url, content_dir,
                                               self.timeout_)

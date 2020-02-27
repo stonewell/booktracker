@@ -1,6 +1,7 @@
-from dingdian.index_parser import IndexParser
-from dingdian.page_tracker import PageTracker
+from youdu.index_parser import IndexParser
+from youdu.page_tracker import PageTracker
 from book_tracker_base import TrackerBase
+from pathlib import Path
 
 
 class Tracker(TrackerBase):
@@ -15,3 +16,9 @@ class Tracker(TrackerBase):
 
     def _get_page_tracker(self, page_url, content_dir, timeout):
         return PageTracker(page_url, content_dir, timeout)
+
+    def _get_page_url(self, page_file):
+        return page_file
+
+    def _parse_url(self):
+        self.prefix_ = 'youdu_' + Path(self.url_).parts[-1]

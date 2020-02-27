@@ -1,13 +1,13 @@
 class IndexParserBase(object):
+    def _get_key(self, item):
+        return int(item[1].replace('.html', ''))
+
     def get_chapters(self):
         c = {}
         for data, href in self.chapters_:
             c[href] = (data, href)
 
-        def get_key(item):
-            return int(item[1].replace('.html', ''))
-
-        return sorted([c[key] for key in c], key=get_key)
+        return sorted([c[key] for key in c], key=self._get_key)
 
     def data_to_bytes(self, data):
         x = 0
