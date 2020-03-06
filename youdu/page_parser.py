@@ -1,8 +1,6 @@
 import json
 import base64
-
-class NeedLoginError(Exception):
-    pass
+from exceptions import NeedLoginError, NotFreeError
 
 class PageParser(object):
     def __init__(self):
@@ -25,6 +23,9 @@ class PageParser(object):
 
         if data['status'] == 3:
             raise NeedLoginError()
+
+        if data['status'] == 2:
+            raise NotFreeError();
 
         show_content = data['data']['show_content']
 

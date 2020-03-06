@@ -1,5 +1,7 @@
+import logging
 import json
 
+from exceptions import NeedLoginError, NotFreeError
 from pathlib import Path
 from utils.epub_builder import EPubBuilder
 from utils.url_helper import open_url
@@ -75,21 +77,26 @@ class TrackerBase(object):
 
             content_dir.mkdir(parents=True, exist_ok=True)
 
-            for i in range(len(self.idx_['chapters'])):
-                page_key, page_file = self.idx_['chapters'][i]
-                page_url = self._get_page_url(page_file)
+            try:
+                for i in range(len(self.idx_['chapters'])):
+                    page_key, page_file = self.idx_['chapters'][i]
+                    page_url = self._get_page_url(page_file)
 
-                page = self._get_page_tracker(page_url, content_dir,
+                    page = self._get_page_tracker(page_url, content_dir,
                                               self.timeout_)
-                update_count += page.refresh()
+                    update_count += page.refresh()
 
-            for i in range(len(self.idx_['chapters']), len(chapters)):
-                page_key, page_file = chapters[i]
-                page_url = self._get_page_url(page_file)
+                for i in range(len(self.idx_['chapters']), len(chapters)):
+                    page_key, page_file = chapters[i]
+                    page_url = self._get_page_url(page_file)
 
-                page = self._get_page_tracker(page_url, content_dir,
+                    page = self._get_page_tracker(page_url, content_dir,
                                               self.timeout_)
-                update_count += page.refresh()
+                    update_count += page.refresh()
+            except NeedLoginError:
+                logging.error('{} need to relogin from browser'.format(self.url_))
+            except NotFreeError:
+                logging.error('{} need to purchase first, not free book'.format(self.url_))
 
             self.idx_['chapters'] = chapters
 

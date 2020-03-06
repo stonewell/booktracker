@@ -9,6 +9,12 @@ hdr = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML,
        'Connection': 'keep-alive'}
 
 
-def open_url(url, timeout):
-    req = urllib.request.Request(url, headers=hdr)
+def open_url(url, timeout, extra_headers = {}):
+    local_headers = {}
+    local_headers.update(hdr)
+
+    if extra_headers is not None:
+        local_headers.update(extra_headers)
+
+    req = urllib.request.Request(url, headers=local_headers)
     return urllib.request.urlopen(req, timeout=timeout)

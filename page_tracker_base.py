@@ -9,6 +9,7 @@ class PageTrackerBase(object):
         self.url_ = url
         self.dir_ = dir
         self.timeout_ = timeout
+        self.extra_headers_ = {}
 
         self._do_init()
 
@@ -25,11 +26,14 @@ class PageTrackerBase(object):
     def _should_write_content(self, parser):
         return True
 
+    def _get_extra_headers(self):
+        return self.extra_headers_;
+
     def refresh(self):
         if self.local_file_path_.exists():
             return 0
 
-        with open_url(self.url_, self.timeout_) as response:
+        with open_url(self.url_, self.timeout_, self._get_extra_headers()) as response:
             parser = self._get_page_parser()
             raw_data = response.read()
             r_data = raw_data.decode(response
