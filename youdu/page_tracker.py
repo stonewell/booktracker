@@ -5,11 +5,12 @@ from exceptions import NeedLoginError
 
 
 class PageTracker(PageTrackerBase):
-    def __init__(self, url, dir, timeout):
+    def __init__(self, key, url, dir, timeout):
         super().__init__(url, dir, timeout)
+        self.page_key_ = key
 
     def _get_page_parser(self):
-        return PageParser()
+        return PageParser(self.page_key_)
 
     def _should_write_content(self, parser):
         if parser.content.find('正在手打中，请稍等片刻') >= 0:

@@ -14,11 +14,14 @@ class Tracker(TrackerBase):
     def _get_index_parser(self):
         return IndexParser()
 
-    def _get_page_tracker(self, page_url, content_dir, timeout):
-        return PageTracker(page_url, content_dir, timeout)
+    def _get_page_tracker(self, page_key, page_url, content_dir, timeout):
+        return PageTracker(page_key, page_url, content_dir, timeout)
 
     def _get_page_url(self, page_file):
         return page_file
 
     def _parse_url(self):
         self.prefix_ = 'youdu_' + Path(self.url_).parts[-1]
+
+    def _get_chapter_local_file(self, chapter_url):
+        return Path(chapter_url).parts[-1] + '.html'

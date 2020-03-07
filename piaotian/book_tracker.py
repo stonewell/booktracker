@@ -16,7 +16,7 @@ class Tracker(TrackerBase):
     def _get_index_parser(self):
         return IndexParser()
 
-    def _get_page_tracker(self, page_url, content_dir, timeout):
+    def _get_page_tracker(self, page_key, page_url, content_dir, timeout):
         return PageTracker(page_url, content_dir, timeout)
 
     def _need_read_page_content(self, response):

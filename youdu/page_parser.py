@@ -3,9 +3,10 @@ import base64
 from exceptions import NeedLoginError, NotFreeError
 
 class PageParser(object):
-    def __init__(self):
+    def __init__(self, page_key):
         super().__init__()
 
+        self.page_key_ = page_key
         self.div_stack_ = 0
         self.in_content_ = False
         self.in_a_ = False
@@ -28,6 +29,10 @@ class PageParser(object):
             raise NotFreeError();
 
         show_content = data['data']['show_content']
+
+        content += "<h1>"
+        content += self.page_key_
+        content += "</h1>"
 
         def sort_key(val):
             return val['paragraph_index']

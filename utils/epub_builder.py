@@ -1,3 +1,4 @@
+import logging
 import os.path
 import zipfile
 
@@ -68,7 +69,7 @@ toc_ncx_template = '''<?xml version="1.0" encoding="utf-8" ?>
 
 
 class EPubBuilder(object):
-    def __init__(self, title, author, output_dir, content_dir, chapters):
+    def __init__(self, title, author, output_dir, content_dir, chapters, get_chapter_local_file = None):
         super().__init__()
 
         self.title_ = title
@@ -76,6 +77,11 @@ class EPubBuilder(object):
         self.content_dir_ = content_dir
         self.chapters_ = chapters
         self.author_ = author
+
+        if get_chapter_local_file:
+            self.get_chapter_local_file_ = get_chapter_local_file
+        else:
+            self.get_chapter_local_file_ = lambda file: file
 
     def build(self):
         epub_file = Path(self.output_dir_) / self.title_
@@ -94,8 +100,8 @@ class EPubBuilder(object):
         toc_ncx = ""
 
         # Write each HTML file to the ebook, collect information for the index
-        for i, html in enumerate([Path(self.content_dir_) / x[1] for x in self.chapters_]):
-            if not Path(html).exists():
+        for i, html in enumerate([Path(self.content_dir_) / self.get_chapter_local_file_(x[1]) for x in self.chapters_]):
+            if not html.exists():
                 continue
 
             basename = os.path.basename(html)

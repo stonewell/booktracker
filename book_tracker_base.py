@@ -46,7 +46,7 @@ class TrackerBase(object):
     def _get_index_parser(self):
         raise ValueError('no impl')
 
-    def _get_page_tracker(self, page_url, content_dir, timeout):
+    def _get_page_tracker(self, page_key, page_url, content_dir, timeout):
         raise ValueError('no impl')
 
     def _need_read_page_content(self, response):
@@ -54,6 +54,9 @@ class TrackerBase(object):
 
     def _get_page_url(self, page_file):
         return self.url_.replace('index.html', page_file)
+
+    def _get_chapter_local_file(self, chapter_url):
+        return chapter_url
 
     def refresh(self):
         with open_url(self.url_, self.timeout_) as response:
@@ -82,7 +85,7 @@ class TrackerBase(object):
                     page_key, page_file = self.idx_['chapters'][i]
                     page_url = self._get_page_url(page_file)
 
-                    page = self._get_page_tracker(page_url, content_dir,
+                    page = self._get_page_tracker(page_key, page_url, content_dir,
                                               self.timeout_)
                     update_count += page.refresh()
 
@@ -90,8 +93,8 @@ class TrackerBase(object):
                     page_key, page_file = chapters[i]
                     page_url = self._get_page_url(page_file)
 
-                    page = self._get_page_tracker(page_url, content_dir,
-                                              self.timeout_)
+                    page = self._get_page_tracker(page_key, page_url, content_dir,
+                                                  self.timeout_)
                     update_count += page.refresh()
             except NeedLoginError:
                 logging.error('{} need to relogin from browser'.format(self.url_))
@@ -114,5 +117,6 @@ class TrackerBase(object):
                          self.author,
                          str(self.book_dir_),
                          str(content_dir),
-                         self.idx_['chapters'])
+                         self.idx_['chapters'],
+                         self._get_chapter_local_file)
         eb.build()
