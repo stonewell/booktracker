@@ -30,9 +30,9 @@ class PageParser(object):
 
         show_content = data['data']['show_content']
 
-        content += "<h1>"
-        content += self.page_key_
-        content += "</h1>"
+        self.content += "<h1>"
+        self.content += self.page_key_
+        self.content += "</h1>"
 
         def sort_key(val):
             return val['paragraph_index']
