@@ -30,6 +30,3 @@ class PageTracker(PageTrackerBase):
 
     def login(self):
         pass
-
-    def _get_extra_headers(self):
-        return {'cookie': 'PHPSESSID=71g4k7048l6rn538jjk1ce6bse; saveMemberInfo=%7B%22username%22%3A%2213910399454%22%2C%22password%22%3A%22123456%22%7D'}

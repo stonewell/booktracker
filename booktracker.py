@@ -6,17 +6,22 @@ import logging
 def args_parser():
     parser = argparse.ArgumentParser(prog='booktracker',
                                      description='book update tracker in python')
-    parser.add_argument('-f', '--urls_file', type=argparse.FileType('r'), help='a file contains book urls', required=False)
+    parser.add_argument('-f', '--urls_file', type=argparse.FileType('r'), help='a file contains book urls, could be a text file list urls or complex json file for url and attributes', required=False)
     parser.add_argument('-l', '--url', type=str, help='a book url to track', required=False)
     parser.add_argument('-o', '--output', type=str, help='directory to store book content', required=True)
     parser.add_argument('--epub', action='store_true', help='generate epub of book', required=False)
     parser.add_argument('--timeout', type=int, help='network request timeout value, default=13s', required=False, default=13)
     parser.add_argument('--author', type=str, help='author of the book', required=False, default='')
     parser.add_argument('--title', type=str, help='title of the book', required=False, default='')
+    parser.add_argument('--header', type=str, action='append', help='http request header', required=False, dest='headers')
+    parser.add_argument('-v', '--verbose', action='count', help='print debug information', required=False, default=0)
     return parser
 
 if __name__ == '__main__':
     parser = args_parser().parse_args()
+
+    if parser.verbose >= 1:
+        logging.getLogger('').setLevel(logging.DEBUG)
 
     if parser.urls_file is None and parser.url is None:
         args_parser().print_usage()
@@ -28,15 +33,23 @@ if __name__ == '__main__':
         for url in parser.urls_file:
             url = url.strip().replace('\n', '').replace('\r', '')
             parts = url.split('|')
-            urls.add((parts[0],
-                      parts[1] if len(parts) > 1 else '',
-                      parts[2] if len(parts) > 2 else '')
+
+            headers = []
+
+            if len(parts) > 3:
+                headers = '|'.join(parts[3:]).split(',')
+
+            urls.add(
+                (parts[0],
+                 parts[1] if len(parts) > 1 else '',
+                 parts[2] if len(parts) > 2 else '',
+                 tuple(headers))
             )
 
     if parser.url:
-        urls.add((parser.url, parser.author, parser.title))
+        urls.add((parser.url, parser.author, parser.title, tuple(parser.headers) if parser.headers else tuple([])))
 
-    for url, author, title in sorted(urls):
+    for url, author, title, headers in sorted(urls):
         try:
             if url.find('piaotian') > 0:
                 from piaotian.book_tracker import Tracker as PiaoTianTracker
@@ -48,10 +61,11 @@ if __name__ == '__main__':
                 from youdu.book_tracker import Tracker as YouduTracker
                 tracker = YouduTracker(url, author, title, parser.output, parser.timeout)
 
+            tracker.headers = list(headers)
+
             update_count = tracker.refresh()
             print(tracker.title, 'update count:', update_count)
             if parser.epub:
                 tracker.gen_epub()
         except:
-            logging.exception("update failed")
-            print('update failed:', url)
+            logging.exception("update failed:{}".format(url))

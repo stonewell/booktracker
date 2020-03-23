@@ -16,8 +16,41 @@ class TrackerBase(object):
         self.timeout_ = timeout
         self.author_ = author
         self.title_ = title
+        self.headers_ = []
 
         self._do_init()
+
+    def __get_url(self):
+        return self.url_
+
+    def __set_url(self, url):
+        self.url_ = url
+
+    url = property(__get_url, __set_url)
+
+    def __get_author(self):
+        return self.author_
+
+    def __set_author(self, author):
+        self.author_ = author
+
+    author = property(__get_author, __set_author)
+
+    def __get_title(self):
+        return self.title_
+
+    def __set_title(self, title):
+        self.title_ = title
+
+    title = property(__get_title, __set_title)
+
+    def __get_headers(self):
+        return self.headers_
+
+    def __set_headers(self, headers):
+        self.headers_ = headers
+
+    headers = property(__get_headers, __set_headers)
 
     def _parse_url(self):
         self.prefix_ = Path(self.url_).parts[-2]
@@ -87,6 +120,8 @@ class TrackerBase(object):
 
                     page = self._get_page_tracker(page_key, page_url, content_dir,
                                               self.timeout_)
+                    page.extra_headers = self._get_extra_headers()
+
                     update_count += page.refresh()
 
                 for i in range(len(self.idx_['chapters']), len(chapters)):
@@ -95,6 +130,8 @@ class TrackerBase(object):
 
                     page = self._get_page_tracker(page_key, page_url, content_dir,
                                                   self.timeout_)
+                    page.extra_headers = _get_extra_headers()
+
                     update_count += page.refresh()
             except NeedLoginError:
                 logging.error('{} need to relogin from browser'.format(self.url_))
@@ -120,3 +157,16 @@ class TrackerBase(object):
                          self.idx_['chapters'],
                          self._get_chapter_local_file)
         eb.build()
+
+    def _get_extra_headers(self):
+        if not self.headers_ or len(self.headers_) == 0:
+            return {}
+
+        extra_headers = {}
+
+        for header in self.headers_:
+            parts = header.split('=')
+
+            extra_headers[parts[0]] = '='.join(parts[1:])
+
+        return extra_headers

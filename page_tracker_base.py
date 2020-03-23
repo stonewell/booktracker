@@ -1,3 +1,5 @@
+import logging
+
 from utils.url_helper import open_url
 from pathlib import Path
 
@@ -28,6 +30,11 @@ class PageTrackerBase(object):
 
     def _get_extra_headers(self):
         return self.extra_headers_;
+
+    def _set_extra_headers(self, extra_headers):
+        self.extra_headers_ = extra_headers;
+
+    extra_headers = property(_get_extra_headers, _set_extra_headers)
 
     def refresh(self):
         if self.local_file_path_.exists():
