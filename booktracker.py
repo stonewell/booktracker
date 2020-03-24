@@ -1,6 +1,7 @@
 import argparse
 import sys
 import logging
+import json
 
 
 def args_parser():
@@ -17,6 +18,45 @@ def args_parser():
     parser.add_argument('-v', '--verbose', action='count', help='print debug information', required=False, default=0)
     return parser
 
+def parse_urls_file_txt(urls_file):
+    urls = set()
+
+    for url in urls_file:
+        url = url.strip().replace('\n', '').replace('\r', '')
+        parts = url.split('|')
+
+        headers = []
+
+        if len(parts) > 3:
+            headers = '|'.join(parts[3:]).split(',')
+
+        urls.add(
+            (parts[0],
+             parts[1] if len(parts) > 1 else '',
+             parts[2] if len(parts) > 2 else '',
+             tuple(headers))
+        )
+
+    return urls
+
+def parse_urls_file_json(urls_file):
+    urls = set()
+
+    books = json.load(urls_file)
+
+    for book in books:
+        url = book['url'].strip().replace('\n', '').replace('\r', '')
+        author = book['author'].strip().replace('\n', '').replace('\r', '') if 'author' in book else ''
+        title = book['title'].strip().replace('\n', '').replace('\r', '') if 'title' in book else ''
+        headers = book['headers'] if 'headers' in book else []
+
+        logging.debug('url:%s, author:%s, title:%s, headers:%s',
+                          url, author, title, headers)
+        urls.add((url, author, title, tuple(headers)))
+
+    return urls
+
+
 if __name__ == '__main__':
     parser = args_parser().parse_args()
 
@@ -30,24 +70,19 @@ if __name__ == '__main__':
     urls = set()
 
     if parser.urls_file:
-        for url in parser.urls_file:
-            url = url.strip().replace('\n', '').replace('\r', '')
-            parts = url.split('|')
-
-            headers = []
-
-            if len(parts) > 3:
-                headers = '|'.join(parts[3:]).split(',')
-
-            urls.add(
-                (parts[0],
-                 parts[1] if len(parts) > 1 else '',
-                 parts[2] if len(parts) > 2 else '',
-                 tuple(headers))
-            )
+        try:
+            urls = parse_urls_file_json(parser.urls_file)
+        except:
+            logging.exception('urls file:%s is not json try text file', parser.urls_file)
+            #parser.urls_file.seek(0)
+            urls = parse_urls_file_txt(parser.urls_file)
 
     if parser.url:
-        urls.add((parser.url, parser.author, parser.title, tuple(parser.headers) if parser.headers else tuple([])))
+        urls.add((parser.url,
+                  parser.author,
+                  parser.title,
+                  tuple(parser.headers) if parser.headers else tuple([]))
+        )
 
     for url, author, title, headers in sorted(urls):
         try:

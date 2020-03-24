@@ -130,7 +130,7 @@ class TrackerBase(object):
 
                     page = self._get_page_tracker(page_key, page_url, content_dir,
                                                   self.timeout_)
-                    page.extra_headers = _get_extra_headers()
+                    page.extra_headers = self._get_extra_headers()
 
                     update_count += page.refresh()
             except NeedLoginError:
