@@ -95,6 +95,9 @@ if __name__ == '__main__':
             elif url.find('youdubook') > 0:
                 from youdu.book_tracker import Tracker as YouduTracker
                 tracker = YouduTracker(url, author, title, parser.output, parser.timeout)
+            elif url.find('shuku') > 0:
+                from shuku.book_tracker import Tracker as ShuKuTracker
+                tracker = ShuKuTracker(url, author, title, parser.output, parser.timeout)
 
             tracker.headers = list(headers)
 
