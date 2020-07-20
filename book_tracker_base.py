@@ -122,7 +122,13 @@ class TrackerBase(object):
                                               self.timeout_)
                     page.extra_headers = self._get_extra_headers()
 
-                    update_count += page.refresh()
+                    logging.debug("update existing page:%s", page_url)
+                    try:
+                        update_count += page.refresh()
+                    except (NeedLoginError, NotFreeError) as err:
+                        raise err
+                    except:
+                        logging.exception("Failed update page:%s", page_url)
 
                 for i in range(len(self.idx_['chapters']), len(chapters)):
                     page_key, page_file = chapters[i]
@@ -132,7 +138,13 @@ class TrackerBase(object):
                                                   self.timeout_)
                     page.extra_headers = self._get_extra_headers()
 
-                    update_count += page.refresh()
+                    logging.debug("update new page:%s", page_url)
+                    try:
+                        update_count += page.refresh()
+                    except (NeedLoginError, NotFreeError) as err:
+                        raise err
+                    except:
+                        logging.exception("Failed update page:%s", page_url)
             except NeedLoginError:
                 logging.error('{} need to relogin from browser'.format(self.url_))
             except NotFreeError:
