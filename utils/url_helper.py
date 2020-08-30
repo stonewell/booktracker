@@ -1,4 +1,5 @@
 import urllib.request
+import ssl
 
 
 hdr = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
@@ -16,5 +17,13 @@ def open_url(url, timeout, extra_headers = {}):
     if extra_headers is not None:
         local_headers.update(extra_headers)
 
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+
+    opener = urllib.request.build_opener(urllib.request.HTTPRedirectHandler())
+    urllib.request.install_opener(opener)
+
     req = urllib.request.Request(url, headers=local_headers)
-    return urllib.request.urlopen(req, timeout=timeout)
+
+    return urllib.request.urlopen(req, timeout=timeout, context=ctx)

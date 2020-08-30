@@ -74,7 +74,7 @@ if __name__ == '__main__':
             urls = parse_urls_file_json(parser.urls_file)
         except:
             logging.exception('urls file:%s is not json try text file', parser.urls_file)
-            #parser.urls_file.seek(0)
+            parser.urls_file.seek(0)
             urls = parse_urls_file_txt(parser.urls_file)
 
     if parser.url:
