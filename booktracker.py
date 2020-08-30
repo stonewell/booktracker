@@ -86,7 +86,7 @@ if __name__ == '__main__':
 
     for url, author, title, headers in sorted(urls):
         try:
-            if url.find('piaotian') > 0:
+            if url.find('pt') > 0:
                 from piaotian.book_tracker import Tracker as PiaoTianTracker
                 tracker = PiaoTianTracker(url, author, title, parser.output, parser.timeout)
             elif url.find('23us') > 0:
