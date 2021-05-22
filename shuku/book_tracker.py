@@ -23,7 +23,7 @@ class Tracker(TrackerBase):
                                             '%a, %d %b %Y %H:%M:%S %Z').timestamp()
 
         if 'title' in self.idx_ and m_time <= self.idx_['m_time'] and 'author' in self.idx_:
-            self.title = self.__get_title(self.idx_['title'])
+            self.title = self._get_title(self.idx_['title'])
             self.author = self.idx_['author']
             return False
 
