@@ -101,6 +101,9 @@ if __name__ == '__main__':
             elif url.find('uukanshu') > 0:
                 from uukanshu.book_tracker import Tracker as UUKanShuTracker
                 tracker = UUKanShuTracker(url, author, title, parser.output, parser.timeout)
+            elif url.find('biquge') > 0:
+                from biquge.book_tracker import Tracker as BiQuGeTracker
+                tracker = BiQuGeTracker(url, author, title, parser.output, parser.timeout)
 
             if not tracker:
                 raise ValueError("tracker not found")

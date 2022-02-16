@@ -1,8 +1,8 @@
 import datetime
 from pathlib import Path
 
-from uukanshu.index_parser import IndexParser
-from uukanshu.page_tracker import PageTracker
+from biquge.index_parser import IndexParser
+from biquge.page_tracker import PageTracker
 from book_tracker_base import TrackerBase
 
 
@@ -35,10 +35,11 @@ class Tracker(TrackerBase):
         return True
 
     def _get_page_url(self, page_file):
-        return page_file
+
+        return '//'.join(Path(self.url).parts[:2]) + page_file
 
     def _parse_url(self):
-        self.prefix_ = Path(self.url_).parts[-1]
+        self.prefix_ = 'biquge_' + Path(self.url_).parts[-1]
 
     def _get_chapter_local_file(self, chapter_url):
-       return Path(chapter_url).parts[-1]
+        return Path(chapter_url).parts[-1]
