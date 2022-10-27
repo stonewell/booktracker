@@ -98,6 +98,9 @@ if __name__ == '__main__':
             elif url.find('shuku') > 0:
                 from shuku.book_tracker import Tracker as ShuKuTracker
                 tracker = ShuKuTracker(url, author, title, parser.output, parser.timeout)
+            elif url.find('uukanshu.com') > 0:
+                from uukanshu_com.book_tracker import Tracker as UUKanShuTracker
+                tracker = UUKanShuTracker(url, author, title, parser.output, parser.timeout)
             elif url.find('uukanshu') > 0:
                 from uukanshu.book_tracker import Tracker as UUKanShuTracker
                 tracker = UUKanShuTracker(url, author, title, parser.output, parser.timeout)

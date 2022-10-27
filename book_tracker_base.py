@@ -98,8 +98,13 @@ class TrackerBase(object):
                 return 0
 
             parser = self._get_index_parser()
-            r_data = response.read().decode(response
+            r_data = response.read()
+            try:
+              r_data = r_data.decode(response
                                             .headers.get_content_charset() or 'gb18030')
+            except:
+              r_data = r_data.decode('gb18030')
+
             parser.feed(r_data)
 
             self.title = self.idx_['title'] = self.title_ if len(self.title_) > 0 else self._get_title(parser.title_)

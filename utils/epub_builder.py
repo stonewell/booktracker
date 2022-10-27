@@ -69,68 +69,77 @@ toc_ncx_template = '''<?xml version="1.0" encoding="utf-8" ?>
 
 
 class EPubBuilder(object):
-    def __init__(self, title, author, output_dir, content_dir, chapters, get_chapter_local_file = None):
-        super().__init__()
 
-        self.title_ = title
-        self.output_dir_ = output_dir
-        self.content_dir_ = content_dir
-        self.chapters_ = chapters
-        self.author_ = author
+  def __init__(self,
+               title,
+               author,
+               output_dir,
+               content_dir,
+               chapters,
+               get_chapter_local_file=None):
+    super().__init__()
 
-        if get_chapter_local_file:
-            self.get_chapter_local_file_ = get_chapter_local_file
-        else:
-            self.get_chapter_local_file_ = lambda file: file
+    self.title_ = title
+    self.output_dir_ = output_dir
+    self.content_dir_ = content_dir
+    self.chapters_ = chapters
+    self.author_ = author
 
-    def build(self):
-        epub_file = Path(self.output_dir_) / self.title_
-        epub_file = epub_file.with_suffix(".epub")
+    if get_chapter_local_file:
+      self.get_chapter_local_file_ = get_chapter_local_file
+    else:
+      self.get_chapter_local_file_ = lambda file: file
 
-        epub = zipfile.ZipFile(str(epub_file), 'w', zipfile.ZIP_DEFLATED)
+  def build(self):
+    epub_file = Path(self.output_dir_) / self.title_
+    epub_file = epub_file.with_suffix(".epub")
 
-        # The first file must be named "mimetype"
-        epub.writestr("mimetype", "application/epub+zip")
+    epub = zipfile.ZipFile(str(epub_file), 'w', zipfile.ZIP_DEFLATED)
 
-        epub.writestr("META-INF/container.xml", idx_data)
+    # The first file must be named "mimetype"
+    epub.writestr("mimetype", "application/epub+zip")
 
-        manifest = ""
-        spine = ""
-        toc = ""
-        toc_ncx = ""
+    epub.writestr("META-INF/container.xml", idx_data)
 
-        # Write each HTML file to the ebook, collect information for the index
-        for i, html in enumerate([Path(self.content_dir_) / self.get_chapter_local_file_(x[1]) for x in self.chapters_]):
-            if not html.exists():
-                continue
+    manifest = ""
+    spine = ""
+    toc = ""
+    toc_ncx = ""
 
-            basename = os.path.basename(html)
-            manifest += '<item id="file_%s" href="OEBPS/%s" media-type="application/xhtml+xml"/>' % (
-                i+1, basename)
-            manifest += '\n'
-            spine += '<itemref idref="file_%s" />' % (i+1)
-            spine += '\n'
-            toc += '<li><a href="%s">OEBPS/%s</a></li>\n' % (
-                basename,
-                self.chapters_[i][0])
-            toc_ncx += '<navPoint id="s%s" playOrder="%s"><navLabel><text>%s</text></navLabel><content src="OEBPS/%s"/></navPoint>\n' % (
-                i+1,
-                i+1,
-                self.chapters_[i][0],
-                basename)
+    # Write each HTML file to the ebook, collect information for the index
+    for i, html in enumerate([
+        Path(self.content_dir_) / self.get_chapter_local_file_(x[1])
+        for x in self.chapters_
+    ]):
 
-            epub.write(html, 'OEBPS/'+basename)
+      if not html.exists():
+        continue
 
-        # Finally, write the index
-        epub.writestr('content.opf', index_tpl % {
+      basename = os.path.basename(html)
+      manifest += '<item id="file_%s" href="OEBPS/%s" media-type="application/xhtml+xml"/>' % (
+          i + 1, basename)
+      manifest += '\n'
+      spine += '<itemref idref="file_%s" />' % (i + 1)
+      spine += '\n'
+      toc += '<li><a href="%s">OEBPS/%s</a></li>\n' % (basename,
+                                                       self.chapters_[i][0])
+      toc_ncx += '<navPoint id="s%s" playOrder="%s"><navLabel><text>%s</text></navLabel><content src="OEBPS/%s"/></navPoint>\n' % (
+          i + 1, i + 1, self.chapters_[i][0], basename)
+
+      epub.write(html, 'OEBPS/' + basename)
+
+    # Finally, write the index
+    epub.writestr(
+        'content.opf', index_tpl % {
             'manifest': manifest,
             'spine': spine,
             'title': self.title_,
             'author': self.author_,
         })
 
-        #epub.writestr('nav.xhtml', nav_template % {'toc': toc})
-        epub.writestr('toc.ncx', toc_ncx_template % {
+    #epub.writestr('nav.xhtml', nav_template % {'toc': toc})
+    epub.writestr(
+        'toc.ncx', toc_ncx_template % {
             'toc_ncx': toc_ncx,
             'title': self.title_
         })
