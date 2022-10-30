@@ -60,4 +60,22 @@ class PageParser(HTMLParser):
   def handle_data(self, data):
     if (self.in_content_
         or self.in_h1_) and not self.in_a_ and not self.in_ad_:
-      self.content += data
+      self.content += self._norm_data(data)
+
+  def _norm_data(self, data):
+    uni_A = 0xFF21
+    uni_a = 0xFF41
+
+    uni_Z = uni_A + ord('z') - ord('a')
+    uni_z = uni_a + ord('z') - ord('a')
+
+    new_data = ''
+    for x in data:
+      if ord(x) >= uni_A and ord(x) <= uni_Z:
+        new_data += chr(ord(x) - uni_A + ord('A'))
+      elif ord(x) >= uni_a and ord(x) <= uni_z:
+        new_data += chr(ord(x) - uni_a + ord('a'))
+      else:
+        new_data += x
+
+    return new_data
