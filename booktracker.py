@@ -116,7 +116,7 @@ if __name__ == '__main__':
             tracker.headers = list(headers)
 
             update_count = tracker.refresh()
-            print(tracker.title, 'update count:', update_count)
+            print(tracker.title, tracker.url, 'update count:', update_count)
             if parser.epub:
                 tracker.gen_epub()
         except:
