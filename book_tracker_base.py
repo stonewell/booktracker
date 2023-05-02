@@ -99,11 +99,13 @@ class TrackerBase(object):
 
             parser = self._get_index_parser()
             r_data = response.read()
-            try:
-              r_data = r_data.decode(response
+
+            if not isinstance(r_data, str):
+              try:
+                r_data = r_data.decode(response
                                             .headers.get_content_charset() or 'gb18030')
-            except:
-              r_data = r_data.decode('gb18030')
+              except:
+                r_data = r_data.decode('gb18030')
 
             parser.feed(r_data)
 
