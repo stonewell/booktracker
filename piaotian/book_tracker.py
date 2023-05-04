@@ -1,8 +1,8 @@
 import datetime
 
-from piaotian.index_parser import IndexParser
-from piaotian.page_tracker import PageTracker
 from book_tracker_base import TrackerBase
+from .index_parser import IndexParser
+from .page_tracker import PageTracker
 
 class Tracker(TrackerBase):
     def __init__(self, url, author, title, data_dir, timeout):

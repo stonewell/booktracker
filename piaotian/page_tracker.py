@@ -1,5 +1,5 @@
-from piaotian.page_parser import PageParser
 from page_tracker_base import PageTrackerBase
+from .page_parser import PageParser
 
 
 class PageTracker(PageTrackerBase):

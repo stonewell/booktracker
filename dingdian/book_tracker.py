@@ -1,5 +1,5 @@
-from dingdian.index_parser import IndexParser
-from dingdian.page_tracker import PageTracker
+from .index_parser import IndexParser
+from .page_tracker import PageTracker
 from book_tracker_base import TrackerBase
 
 

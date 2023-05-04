@@ -1,8 +1,8 @@
 import datetime
 from pathlib import Path
 
-from uukanshu_com.index_parser import IndexParser
-from uukanshu_com.page_tracker import PageTracker
+from .index_parser import IndexParser
+from .page_tracker import PageTracker
 from book_tracker_base import TrackerBase
 
 

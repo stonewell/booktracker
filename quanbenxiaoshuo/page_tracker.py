@@ -1,4 +1,4 @@
-from quanbenxiaoshuo.page_parser import PageParser
+from .page_parser import PageParser
 from page_tracker_base import PageTrackerBase
 
 

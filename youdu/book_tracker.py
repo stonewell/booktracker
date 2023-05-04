@@ -1,5 +1,5 @@
-from youdu.index_parser import IndexParser
-from youdu.page_tracker import PageTracker
+from .index_parser import IndexParser
+from .page_tracker import PageTracker
 from book_tracker_base import TrackerBase
 from pathlib import Path
 
