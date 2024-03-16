@@ -1,11 +1,14 @@
+import sys
 import logging
 import json
+import time
+import random
 
+from urllib.error import URLError
 from exceptions import NeedLoginError, NotFreeError
 from pathlib import Path
 from utils.epub_builder import EPubBuilder
 from utils.url_helper import open_url
-
 
 class TrackerBase(object):
     def __init__(self, url, author, title, data_dir, timeout):
@@ -105,7 +108,10 @@ class TrackerBase(object):
                 r_data = r_data.decode(response
                                             .headers.get_content_charset() or 'gb18030')
               except:
-                r_data = r_data.decode('gb18030')
+                try:
+                  r_data = r_data.decode('gb18030')
+                except:
+                  r_data = r_data.decode('utf-8')
 
             parser.feed(r_data)
 
@@ -121,6 +127,7 @@ class TrackerBase(object):
             content_dir.mkdir(parents=True, exist_ok=True)
 
             try:
+                retry_count = 0
                 for i in range(len(self.idx_['chapters'])):
                     page_key, page_file = self.idx_['chapters'][i]
                     page_url = self._get_page_url(page_file)
@@ -134,6 +141,12 @@ class TrackerBase(object):
                         update_count += page.refresh()
                     except (NeedLoginError, NotFreeError) as err:
                         raise err
+                    except URLError:
+                        logging.exception("Failed update page:%s", page_url)
+                        time.sleep(random.randrange(2, 8))
+                        retry_count += 1
+                        if retry_count > 10:
+                          break
                     except:
                         logging.exception("Failed update page:%s", page_url)
 
@@ -150,6 +163,12 @@ class TrackerBase(object):
                         update_count += page.refresh()
                     except (NeedLoginError, NotFreeError) as err:
                         raise err
+                    except URLError:
+                        logging.exception("Failed update page:%s", page_url)
+                        time.sleep(random.randrange(2, 8))
+                        retry_count += 1
+                        if retry_count > 10:
+                          break
                     except:
                         logging.exception("Failed update page:%s", page_url)
             except NeedLoginError:

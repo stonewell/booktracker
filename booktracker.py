@@ -134,7 +134,7 @@ if __name__ == '__main__':
     try:
       tracker = None
 
-      if url.find('piaotian') > 0 or url.find('ptwxz') > 0:
+      if url.find('piaotia') > 0 or url.find('ptwxz') > 0:
         from piaotian.book_tracker import Tracker as PiaoTianTracker
         tracker = PiaoTianTracker(url, author, title, parser.output,
                                   parser.timeout)
@@ -170,6 +170,10 @@ if __name__ == '__main__':
         from quanbenxiaoshuo.book_tracker import Tracker as QuanbenxiaoshuoTracker
         tracker = QuanbenxiaoshuoTracker(url, author, title, parser.output,
                                          parser.timeout)
+      elif url.find('uuxs8') > 0:
+        from uuxs8.book_tracker import Tracker as UUXSTracker
+        tracker = UUXSTracker(url, author, title, parser.output,
+                                  parser.timeout)
 
       if not tracker:
         raise ValueError("tracker not found")

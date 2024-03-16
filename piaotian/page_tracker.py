@@ -8,3 +8,10 @@ class PageTracker(PageTrackerBase):
 
     def _get_page_parser(self):
         return PageParser()
+
+    def _norm_content(self, content):
+      idx = content.find('重要声明：小说“')
+
+      if idx >= 0:
+        return content[:idx] + '</body></html>'
+      return content
